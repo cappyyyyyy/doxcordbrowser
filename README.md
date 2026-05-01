@@ -6,11 +6,13 @@ Doxcord, siber güvenlik araştırmacıları ve OSINT uzmanları için özel ola
 
 ## 🚀 Öne Çıkan Özellikler
 
-- **🛡️ Akıllı Tor Entegrasyonu:** `.onion` uzantılı adresleri otomatik olarak algılar ve trafiği Tor (SOCKS5) üzerinden yönlendirir. Normal sitelerde ise hız kaybı yaşatmaz.
-- **🔐 Esnek Kimlik Doğrulama:** PostgreSQL desteği ve internet bağlantısı olmadığında devreye giren **Offline-First (Önce Yerel)** sistemi. Şifreleriniz her zaman güvende ve erişilebilir.
-- **📊 OSINT Dashboard:** Gelişmiş dorking araçları, PII tarayıcıları ve istihbarat arayüzü.
-- **🌙 Premium Estetik:** Özel tasarlanmış **Doxcord Logosu**, akıcı animasyonlar ve cyberpunk arayüz.
-- **🚀 Ultra Performans:** Dahili reklam ve takipçi engelleyici (AdBlocker) entegrasyonu.
+- **🛡️ Akıllı Tor Entegrasyonu:** `.onion` uzantılı adresleri otomatik olarak algılar ve trafiği Tor (SOCKS5) üzerinden yönlendirir.
+- **🔐 Elite Güvenlik & Gizlilik:** 
+  - **Anti-Fingerprinting:** Canvas ve WebGL imzalarını rastgeleleştirerek izlenmeyi imkansız hale getirir.
+  - **Process Isolation:** Her tab bağımsız sandbox süreçlerinde çalışır.
+  - **Permission Firewall:** Kamera, mikrofon ve dosya erişimi için sıkı izin yönetimi.
+- **📊 OSINT Workspace:** Vaka dosyaları (Cases) oluşturarak araştırmalarınızı organize edin.
+- **🌙 Premium Estetik:** Tokyo Night özel tasarım, yükleme animasyonları ve cyberpunk arayüz.
 
 ---
 
@@ -25,18 +27,19 @@ chmod +x install.sh && sudo ./install.sh
 
 ---
 
-### 🪟 Windows (Manuel Kurulum)
-1. **Node.js Yükleyin:** [nodejs.org](https://nodejs.org/) adresinden LTS sürümünü kurun.
-2. **Tor Servisini Kurun:** [Tor Project](https://www.torproject.org/download/tor/) adresinden "Windows Expert Bundle" indirin ve `tor.exe`'nin arka planda çalıştığından emin olun (port 9050).
-   - *Alternatif (Chocolatey):* `choco install nodejs tor -y`
-3. **Bağımlılıkları Yükleyin:** Terminalde (CMD/PowerShell) proje klasöründe `npm install` komutunu çalıştırın.
-4. **Başlatın:** `npm start`
+### 🪟 Windows (Kurulum ve Masaüstü)
+1. **Gereksinimler:** [nodejs.org](https://nodejs.org/) adresinden Node.js kurun ve Tor Expert Bundle'ın çalıştığından emin olun.
+2. **Bağımlılıkları Yükleyin:** `npm install`
+3. **Masaüstü Uygulaması Yapma:**
+   - **Yöntem A (EXE Oluşturma):** `npm run build-win` komutunu çalıştırın. `dist/` klasöründe kurulum dosyanız oluşacaktır.
+   - **Yöntem B (Hızlı Başlatıcı):** Proje dizininde sağ tıklayıp bir `.bat` dosyası oluşturun ve içine `npm start` yazın. Bu dosyayı masaüstüne kısayol olarak atayabilirsiniz.
 
 ---
 
 ### 🚀 Masaüstü Entegrasyonu (Sadece Linux)
 Uygulamayı sisteme sabitlemek ve ikonu aktifleştirmek için:
 ```bash
+chmod +x setup_app.sh
 ./setup_app.sh
 ```
 
