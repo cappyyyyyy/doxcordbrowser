@@ -1,0 +1,12 @@
+{
+  "users": [
+    {
+      "id": 0,
+      "username": "cappyruhh",
+      "email": "admin@doxcord.io",
+      "password": "$2b$10$kZr/8mDsHajxS1jDTFHCK.Ft9V3gBB2EXhKSAk9IOaAzDTTbxALwa",
+      "role": "admin"
+    }
+  ],
+  "logins": []
+}

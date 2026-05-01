@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doxcord Intelligence Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #bc13fe;
+            --primary-glow: rgba(188, 19, 254, 0.4);
+            --secondary: #00f2ff;
+            --bg: #16161e;
+            --surface: #1a1b26;
+            --surface-accent: #24283b;
+            --text-main: #e0e0e0;
+            --text-muted: #808090;
+            --border: rgba(188, 19, 254, 0.15);
+            --glass: rgba(10, 10, 15, 0.7);
+        }
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: 'Outfit', sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .dashboard {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 20px;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .brand-logo {
+            font-size: 12px;
+            letter-spacing: 8px;
+            color: var(--primary);
+            font-weight: 800;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px var(--primary-glow);
+        }
+
+        h1 {
+            font-size: 56px;
+            font-weight: 800;
+            margin: 0;
+            background: linear-gradient(to bottom, #ffffff 30%, #a0a0a0 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -1px;
+        }
+
+        .search-section {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 80px;
+        }
+
+        .search-box {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .search-input {
+            width: 100%;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 24px 70px;
+            border-radius: 20px;
+            color: #fff;
+            font-size: 20px;
+            outline: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        .search-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 30px var(--primary-glow), 0 15px 50px rgba(0,0,0,0.8);
+            transform: translateY(-2px);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 25px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary);
+            opacity: 0.8;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .tool-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 30px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-8px);
+            background: var(--surface-accent);
+            border-color: var(--primary);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        .tool-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            opacity: 0;
+            transition: 0.3s;
+        }
+
+        .tool-card:hover::before {
+            opacity: 1;
+        }
+
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(188, 19, 254, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .card-desc {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .card-tag {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--secondary);
+            font-weight: 700;
+        }
+
+        .status-container {
+            margin-top: 80px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background: var(--surface);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .status-pill {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--secondary);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--secondary);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.5); opacity: 0.5; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* Category Labels */
+        .category-label {
+            grid-column: 1 / -1;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-top: 20px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+        }
+
+        ::placeholder {
+            color: rgba(255,255,255,0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <header>
+            <div class="brand-logo">DOXCORD INTELLIGENCE SYSTEM</div>
+            <h1>The OSINT Engine</h1>
+        </header>
+
+        <section class="search-section">
+            <div class="search-box">
+                <svg class="search-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input type="text" class="search-input" id="mainIntelInput" placeholder="Analyze target identity, domain, or metadata...">
+            </div>
+        </section>
+
+        <div class="grid">
+            <div class="category-label">Identity Analysis</div>
+            
+            <div class="tool-card" onclick="openTool('leakcheck')">
+                <div class="card-tag">Breach Data</div>
+                <div class="card-icon"><i class="fas fa-unlock-alt"></i></div>
+                <div class="card-title">LeakCheck V2</div>
+                <div class="card-desc">Deep search through 15B+ records for passwords and data exposure.</div>
+            </div>
+
+            <div class="tool-card" onclick="openTool('social')">
+                <div class="card-tag">Social Intel</div>
+                <div class="card-icon"><i class="fas fa-users-viewfinder"></i></div>
+                <div class="card-title">Social Discovery</div>
+                <div class="card-desc">Find profiles across 300+ platforms using emails or usernames.</div>
+            </div>
+
+            <div class="tool-card" onclick="openTool('identity')">
+                <div class="card-tag">PII Search</div>
+                <div class="card-icon"><i class="fas fa-id-card"></i></div>
+                <div class="card-title">Entity Resolver</div>
+                <div class="card-desc">Resolve identity metadata, Turkish identifiers, and contact trees.</div>
+            </div>
+
+            <div class="category-label">System Tools</div>
+
+            <div class="tool-card" onclick="openTool('network')">
+                <div class="card-tag">Infrastructure</div>
+                <div class="card-icon"><i class="fas fa-globe-americas"></i></div>
+                <div class="card-title">Network Scan</div>
+                <div class="card-desc">Advanced WHOIS, DNS mapping, and port analysis for domains.</div>
+            </div>
+
+            <div class="tool-card" onclick="openTool('media')">
+                <div class="card-tag">Forensics</div>
+                <div class="card-icon"><i class="fas fa-camera-retro"></i></div>
+                <div class="card-title">Media Intel</div>
+                <div class="card-desc">Extract EXIF data, GPS coordinates, and camera profiles from images.</div>
+            </div>
+
+            <div class="tool-card" onclick="openTool('scraping')">
+                <div class="card-tag">Extraction</div>
+                <div class="card-icon"><i class="fas fa-bolt"></i></div>
+                <div class="card-title">Page Scraper</div>
+                <div class="card-desc">Automated intelligence extraction from the active browser tab.</div>
+            </div>
+        </div>
+
+        <section class="status-container">
+            <div class="status-pill">
+                <div class="pulse-dot"></div>
+                DOXCORD CLOUD: CONNECTED
+            </div>
+            <div class="status-pill">
+                INTEL CORE: V4.8.2 "SILENT SHADOW"
+            </div>
+            <div class="status-pill" style="color:var(--primary)">
+                ENCRYPTION: AES-256-GCM ACTIVE
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const input = document.getElementById('mainIntelInput');
+        input.focus();
+
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && input.value.trim()) {
+                const q = encodeURIComponent(input.value.trim());
+                // Communication with parent frame
+                window.location.href = `doxcord://search?q=${q}`;
+            }
+        });
+
+        function openTool(name) {
+            // Tool name mapping and injection
+            window.location.href = `doxcord://tool?name=${encodeURIComponent(name)}`;
+        }
+    </script>
+</body>
+</html>

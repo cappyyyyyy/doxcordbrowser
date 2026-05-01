@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Doxcord Intelligence OS (Universal App)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #bc13fe;
+            --primary-glow: rgba(188, 19, 254, 0.4);
+            --secondary: #00f2ff;
+            --bg: #16161e;
+            --surface: #1a1b26;
+            --surface-accent: #24283b;
+            --text-main: #e0e0e0;
+            --text-muted: #808090;
+            --border: rgba(188, 19, 254, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: 'Outfit', 'Inter', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* FULLSCREEN TOGGLE */
+        .top-controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .icon-btn {
+            background: rgba(188, 19, 254, 0.1);
+            border: 1px solid var(--border);
+            color: var(--primary);
+            width: 40px; height: 40px;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s;
+        }
+        .icon-btn:hover { background: rgba(188, 19, 254, 0.2); }
+        .icon-btn svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; }
+
+        /* DASHBOARD VIEW */
+        .dashboard {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 20px;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        header { text-align: center; margin-bottom: 50px; }
+        .brand-logo {
+            font-size: 12px; letter-spacing: 8px; color: var(--primary);
+            font-weight: 800; margin-bottom: 10px; text-shadow: 0 0 10px var(--primary-glow);
+        }
+        h1 {
+            font-size: min(10vw, 56px); /* Responsive title */
+            font-weight: 800; margin: 0;
+            background: linear-gradient(to bottom, #ffffff 30%, #a0a0a0 100%);
+            -webkit-background-clip: text; background-clip: text;
+            -webkit-text-fill-color: transparent; letter-spacing: -1px;
+        }
+
+        .search-section { display: flex; justify-content: center; margin-bottom: 60px; }
+        .search-box { position: relative; width: 100%; max-width: 800px; }
+        .search-input {
+            width: 100%; background: var(--surface); border: 1px solid var(--border);
+            padding: 24px 70px; border-radius: 20px; color: #fff; font-size: 18px;
+            outline: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5); backdrop-filter: blur(10px);
+        }
+        .search-input:focus {
+            border-color: var(--primary); box-shadow: 0 0 30px var(--primary-glow), 0 15px 50px rgba(0,0,0,0.8);
+            transform: translateY(-2px);
+        }
+        .search-icon {
+            position: absolute; left: 25px; top: 50%; transform: translateY(-50%);
+            color: var(--primary); opacity: 0.8;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+        }
+
+        .tool-card {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 24px; padding: 25px; transition: all 0.3s ease;
+            cursor: pointer; position: relative; overflow: hidden;
+            display: flex; flex-direction: column; gap: 15px;
+        }
+        .tool-card:hover {
+            transform: translateY(-5px); background: var(--surface-accent);
+            border-color: var(--primary); box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+        .tool-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            opacity: 0; transition: 0.3s;
+        }
+        .tool-card:hover::before { opacity: 1; }
+        .card-icon {
+            width: 48px; height: 48px; background: rgba(188, 19, 254, 0.1);
+            border-radius: 12px; display: flex; align-items: center; justify-content: center;
+            color: var(--primary); margin-bottom: 5px; font-size: 24px;
+        }
+        .card-title { font-size: 20px; font-weight: 600; color: #fff; }
+        .card-desc { font-size: 14px; color: var(--text-muted); line-height: 1.5; }
+        .card-tag { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--secondary); font-weight: 700; }
+
+        .category-label {
+            grid-column: 1 / -1; font-size: 12px; font-weight: 700; letter-spacing: 3px;
+            color: var(--text-muted); text-transform: uppercase; margin-top: 20px;
+            border-bottom: 1px solid var(--border); padding-bottom: 10px;
+        }
+
+        .status-container {
+            margin-top: 60px; display: flex; justify-content: space-between; align-items: center;
+            padding: 20px; background: var(--surface); border-radius: 20px; border: 1px solid var(--border);
+            flex-wrap: wrap; gap: 10px;
+        }
+        .status-pill {
+            display: flex; align-items: center; gap: 10px; font-size: 11px;
+            font-weight: 600; letter-spacing: 1px; color: var(--text-muted);
+        }
+        .pulse-dot {
+            width: 8px; height: 8px; background: var(--secondary);
+            border-radius: 50%; box-shadow: 0 0 10px var(--secondary);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.5); opacity: 0.5; } 100% { transform: scale(1); opacity: 1; } }
+
+        /* OSINT PANEL STYLES (Merged from osint-styles.css) */
+        .osint-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .osint-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 30px; padding: 20px; background: linear-gradient(135deg, var(--surface), var(--bg));
+            border: 1px solid var(--border); border-radius: 12px;
+        }
+
+        .osint-header h1 {
+            font-size: min(6vw, 28px); color: var(--primary); font-weight: 700; background: none; -webkit-text-fill-color: initial;
+        }
+
+        .back-btn {
+            background: transparent; border: 1px solid var(--border); color: var(--primary);
+            padding: 10px 15px; border-radius: 8px; font-size: 14px; cursor: pointer; transition: all 0.2s; font-weight: bold;
+        }
+        .back-btn:hover { background: rgba(188, 19, 254, 0.2); }
+
+        .tool-section {
+            background: rgba(10, 10, 15, 0.8); border: 1px solid var(--border);
+            border-radius: 12px; padding: 25px; margin-bottom: 20px; font-family: 'Inter', sans-serif;
+        }
+        .tool-section h2 { font-size: 20px; color: var(--primary); margin-bottom: 20px; font-weight: 600; }
+
+        .dork-type-selector, .api-tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+        .dork-type-btn, .api-tab {
+            flex: 1; min-width: 120px; padding: 12px; background: rgba(188, 19, 254, 0.1);
+            border: 1px solid var(--border); border-radius: 8px; color: #9090a0;
+            font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s;
+        }
+        .dork-type-btn:hover, .api-tab:hover { background: rgba(188, 19, 254, 0.15); }
+        .dork-type-btn.active, .api-tab.active {
+            background: linear-gradient(135deg, #7a00ff, #bc13fe); color: #fff; border-color: var(--primary);
+        }
+
+        .dork-panel, .api-panel { display: flex; flex-direction: column; gap: 15px; }
+        
+        .osint-input, .osint-select {
+            width: 100%; padding: 14px 18px; background: var(--surface-accent);
+            border: 1px solid var(--border); border-radius: 8px; color: #e0e0e0; font-size: 14px; outline: none; transition: all 0.2s;
+        }
+        .osint-input:focus, .osint-select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(188, 19, 254, 0.1); }
+        
+        .osint-btn {
+            padding: 14px 24px; background: linear-gradient(135deg, #7a00ff, #bc13fe); border: none;
+            border-radius: 8px; color: #fff; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+        }
+        .osint-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(188, 19, 254, 0.4); }
+
+        .dork-preview { padding: 15px; background: rgba(188, 19, 254, 0.05); border: 1px solid var(--border); border-radius: 8px; }
+        .dork-preview strong { display: block; margin-bottom: 8px; color: var(--primary); font-size: 13px; }
+        .dork-preview code { display: block; padding: 10px; background: var(--surface-accent); border-radius: 6px; color: var(--secondary); font-family: monospace; word-break: break-all; }
+
+        .results-container {
+            min-height: 200px; max-height: 600px; overflow-y: auto; padding: 20px;
+            background: var(--surface-accent); border: 1px solid var(--border); border-radius: 8px;
+        }
+        
+        .results-placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 200px; color: #606070; }
+        .placeholder-icon { font-size: 48px; margin-bottom: 15px; opacity: 0.5; }
+
+        .result-item { padding: 15px; background: rgba(188, 19, 254, 0.05); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 12px; animation: slideIn 0.3s ease-out; }
+        .result-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .result-title { font-size: 15px; font-weight: 600; color: var(--primary); }
+        .result-badge { padding: 4px 10px; background: rgba(0, 242, 255, 0.2); border-radius: 12px; font-size: 11px; color: var(--secondary); font-weight: 600; }
+        .result-badge.danger { background: rgba(255, 95, 87, 0.2); color: #ff5f57; }
+        .result-content { font-size: 13px; color: #c0c0c0; line-height: 1.6; }
+        .result-content pre { background: var(--surface); padding: 12px; border-radius: 6px; overflow-x: auto; margin-top: 10px; }
+
+        .loading { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 20px; color: var(--primary); }
+        .loading-spinner { width: 20px; height: 20px; border: 3px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
+        
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Notification */
+        .notification {
+            position: fixed; bottom: 20px; right: 20px; padding: 14px 20px;
+            background: rgba(20, 20, 26, 0.95); border: 1px solid var(--primary); border-left: 4px solid var(--primary);
+            color: #e0e0e0; font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 500;
+            z-index: 10000; border-radius: 8px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            animation: slideInNotif 0.3s ease-out; backdrop-filter: blur(10px); max-width: 300px;
+        }
+        .notification-error { border-color: #ff5f57; border-left-color: #ff5f57; }
+        .notification-success { border-color: var(--secondary); border-left-color: var(--secondary); }
+        @keyframes slideInNotif { from { transform: translateX(400px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+        .hidden { display: none !important; }
+
+        /* Mobile Adjustments */
+        @media (max-width: 768px) {
+            .dashboard { padding: 40px 15px; }
+            .grid { grid-template-columns: 1fr; }
+            .status-container { flex-direction: column; align-items: flex-start; }
+            .search-input { padding: 20px 50px; font-size: 16px; }
+            .search-icon { left: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Fullscreen Toggle -->
+    <div class="top-controls">
+        <button class="icon-btn" id="fullscreenBtn" title="Toggle Fullscreen">
+            <svg viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>
+        </button>
+    </div>
+
+    <!-- VIEW 1: Dashboard -->
+    <div id="dashboardView" class="dashboard">
+        <header>
+            <div class="brand-logo">DOXCORD INTELLIGENCE SYSTEM</div>
+            <h1>The OSINT Engine</h1>
+        </header>
+
+        <section class="search-section">
+            <div class="search-box">
+                <svg class="search-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input type="text" class="search-input" id="mainIntelInput" placeholder="Analyze target identity, domain, or metadata...">
+            </div>
+        </section>
+
+        <div class="grid">
+            <div class="category-label">Identity Analysis</div>
+            
+            <div class="tool-card" data-tool="leakcheck">
+                <div class="card-tag">Breach Data</div>
+                <div class="card-icon"><i class="fas fa-unlock-alt"></i></div>
+                <div class="card-title">LeakCheck V2</div>
+                <div class="card-desc">Deep search through 15B+ records for passwords and data exposure.</div>
+            </div>
+
+            <div class="tool-card" data-tool="social">
+                <div class="card-tag">Social Intel</div>
+                <div class="card-icon"><i class="fas fa-users-viewfinder"></i></div>
+                <div class="card-title">Social Discovery</div>
+                <div class="card-desc">Find profiles across 300+ platforms using emails or usernames.</div>
+            </div>
+
+            <div class="tool-card" data-tool="identity">
+                <div class="card-tag">PII Search</div>
+                <div class="card-icon"><i class="fas fa-id-card"></i></div>
+                <div class="card-title">Entity Resolver</div>
+                <div class="card-desc">Resolve identity metadata, Turkish identifiers, and contact trees.</div>
+            </div>
+
+            <div class="category-label">System Tools</div>
+
+            <div class="tool-card" data-tool="network">
+                <div class="card-tag">Infrastructure</div>
+                <div class="card-icon"><i class="fas fa-globe-americas"></i></div>
+                <div class="card-title">Network Scan</div>
+                <div class="card-desc">Advanced WHOIS, DNS mapping, and port analysis for domains.</div>
+            </div>
+
+            <div class="tool-card" data-tool="media">
+                <div class="card-tag">Forensics</div>
+                <div class="card-icon"><i class="fas fa-camera-retro"></i></div>
+                <div class="card-title">Media Intel</div>
+                <div class="card-desc">Extract EXIF data, GPS coordinates, and camera profiles from images.</div>
+            </div>
+
+            <div class="tool-card" data-tool="scraping">
+                <div class="card-tag">Extraction</div>
+                <div class="card-icon"><i class="fas fa-bolt"></i></div>
+                <div class="card-title">Dork Generator</div>
+                <div class="card-desc">AI-powered Dork templates for pinpoint multi-engine queries.</div>
+            </div>
+        </div>
+
+        <section class="status-container">
+            <div class="status-pill"><div class="pulse-dot"></div> DOXCORD CLOUD: STANDALONE</div>
+            <div class="status-pill">INTEL CORE: UNIVERSAL APP</div>
+            <div class="status-pill" style="color:var(--secondary)">ENCRYPTION: AES-256-GCM READY</div>
+        </section>
+    </div>
+
+    <!-- VIEW 2: OSINT Panel -->
+    <div id="osintView" class="osint-container hidden">
+        <div class="osint-header">
+            <h1><i class="fas fa-search"></i> OSINT Intelligence Tools</h1>
+            <button class="back-btn" id="goBackBtn">← BACK TO DASHBOARD</button>
+        </div>
+
+        <!-- Google Dork Section -->
+        <div id="dorkSection" class="tool-section hidden">
+            <h2><i class="fas fa-bullseye"></i> Google Dork Generator</h2>
+            <div class="dork-type-selector">
+                <button class="dork-type-btn active" data-type="username">Username Dork</button>
+                <button class="dork-type-btn" data-type="web">Web Dork</button>
+            </div>
+
+            <!-- Username Dork -->
+            <div class="dork-panel" id="usernameDork">
+                <input type="text" class="osint-input" id="usernameInput" placeholder="Enter username...">
+                <button class="osint-btn" id="usernameSearch">Search Username</button>
+                <div class="dork-preview"><strong>Generated Dork:</strong><code id="usernameDorkPreview">allintext:"username"</code></div>
+            </div>
+
+            <!-- Web Dork -->
+            <div class="dork-panel hidden" id="webDork">
+                <select class="osint-select" id="webDorkType">
+                    <option value="site">Site Search</option>
+                    <option value="filetype">File Type</option>
+                    <option value="inurl">In URL</option>
+                    <option value="intitle">In Title</option>
+                    <option value="intext">In Text</option>
+                    <option value="cache">Cached Page</option>
+                    <option value="related">Related Sites</option>
+                </select>
+                <input type="text" class="osint-input" id="webDorkInput" placeholder="Enter search term...">
+                <button class="osint-btn" id="webDorkSearch">Generate & Search</button>
+                <div class="dork-preview"><strong>Generated Dork:</strong><code id="webDorkPreview">site:example.com</code></div>
+            </div>
+        </div>
+
+        <!-- OSINT APIs Section -->
+        <div id="apiSection" class="tool-section">
+            <h2><i class="fas fa-shield-alt"></i> External Intelligence</h2>
+            
+            <div class="api-tabs">
+                <button class="api-tab active" data-tab="email">Email</button>
+                <button class="api-tab" data-tab="username">Username</button>
+                <button class="api-tab" data-tab="ip">IP/Domain</button>
+                <button class="api-tab" data-tab="leak">Breach</button>
+                <button class="api-tab" data-tab="social">Social</button>
+            </div>
+
+            <!-- Panels -->
+            <div class="api-panel" id="emailPanel">
+                <select class="osint-select" id="emailApiType"><option value="email_hibp">Have I Been Pwned</option><option value="disposable_email">Disposable Check</option></select>
+                <input type="text" class="osint-input" id="emailInput" placeholder="Enter email address...">
+                <button class="osint-btn" id="emailSearch">Search Email</button>
+            </div>
+
+            <div class="api-panel hidden" id="usernamePanel">
+                <select class="osint-select" id="usernameApiType"><option value="username_github">GitHub Profile</option></select>
+                <input type="text" class="osint-input" id="usernameApiInput" placeholder="Enter username...">
+                <button class="osint-btn" id="usernameApiSearch">Search Username</button>
+            </div>
+
+            <div class="api-panel hidden" id="ipPanel">
+                <select class="osint-select" id="ipApiType"><option value="ip_info">IP Geolocation</option></select>
+                <input type="text" class="osint-input" id="ipInput" placeholder="Enter IP or domain...">
+                <button class="osint-btn" id="ipSearch">Search IP/Domain</button>
+            </div>
+
+            <div class="api-panel hidden" id="leakPanel">
+                <select class="osint-select" id="leakApiType"><option value="leak_leakcheck">LeakCheck Database</option></select>
+                <input type="text" class="osint-input" id="leakInput" placeholder="Enter email or password...">
+                <button class="osint-btn" id="leakSearch">Check Breach</button>
+            </div>
+
+            <div class="api-panel hidden" id="socialPanel">
+                <select class="osint-select" id="socialApiType"><option value="oathnet_social">Cross-Platform Username</option></select>
+                <input type="text" class="osint-input" id="socialInput" placeholder="Enter username...">
+                <button class="osint-btn" id="socialSearch">Search Social</button>
+            </div>
+        </div>
+
+        <div class="tool-section" id="resultsBlock">
+            <h2><i class="fas fa-chart-bar"></i> Results</h2>
+            <div class="results-container" id="resultsContainer">
+                <div class="results-placeholder">
+                    <span class="placeholder-icon"><i class="fas fa-search"></i></span><p>No results yet. Start a search above.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN JAVASCRIPT -->
+    <script>
+        // GLOBALS
+        const dashboardView = document.getElementById('dashboardView');
+        const osintView = document.getElementById('osintView');
+        const apiSection = document.getElementById('apiSection');
+        const dorkSection = document.getElementById('dorkSection');
+
+        // NOTIFICATIONS
+        function showNotification(message, type = 'info') {
+            const el = document.createElement('div');
+            el.className = `notification notification-${type}`;
+            el.textContent = message;
+            document.body.appendChild(el);
+            setTimeout(() => {
+                el.style.animation = 'slideOutNotif 0.3s ease-out';
+                setTimeout(() => el.remove(), 300);
+            }, 3000);
+        }
+
+        // FULLSCREEN
+        document.getElementById('fullscreenBtn').addEventListener('click', () => {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    showNotification(`Error: ${err.message}`, 'error');
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        });
+
+        // VIEW ROUTING
+        function openOSINTPanel(mode, preselectTab = null) {
+            dashboardView.classList.add('hidden');
+            osintView.classList.remove('hidden');
+            window.scrollTo(0, 0);
+            
+            if (mode === 'dork') {
+                dorkSection.classList.remove('hidden');
+                apiSection.classList.add('hidden');
+            } else {
+                dorkSection.classList.add('hidden');
+                apiSection.classList.remove('hidden');
+                if (preselectTab) {
+                    document.querySelector(`.api-tab[data-tab="${preselectTab}"]`)?.click();
+                }
+            }
+        }
+
+        document.getElementById('goBackBtn').addEventListener('click', () => {
+            osintView.classList.add('hidden');
+            dashboardView.classList.remove('hidden');
+            window.scrollTo(0, 0);
+        });
+
+        // DASHBOARD HANDLERS
+        document.getElementById('mainIntelInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && e.target.value.trim()) {
+                const query = encodeURIComponent(e.target.value.trim());
+                showNotification('Opening global search...', 'info');
+                window.open(`https://duckduckgo.com/?kae=d&q=${query}`, '_blank');
+            }
+        });
+
+        document.querySelectorAll('.tool-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const tool = card.dataset.tool;
+                
+                switch(tool) {
+                    case 'leakcheck': openOSINTPanel('api', 'leak'); break;
+                    case 'social': openOSINTPanel('api', 'social'); break;
+                    case 'identity': openOSINTPanel('api', 'email'); break;
+                    case 'network': window.open('https://whois.domaintools.com/', '_blank'); break;
+                    case 'media': window.open('https://jimpl.com/', '_blank'); break;
+                    case 'scraping': openOSINTPanel('dork'); break;
+                }
+            });
+        });
+
+        // DORK GENERATOR HANDLERS
+        document.querySelectorAll('.dork-type-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.dork-type-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                const type = btn.dataset.type;
+                document.getElementById('usernameDork').classList.toggle('hidden', type !== 'username');
+                document.getElementById('webDork').classList.toggle('hidden', type !== 'web');
+            });
+        });
+
+        const usernameInput = document.getElementById('usernameInput');
+        usernameInput.addEventListener('input', () => {
+            const v = usernameInput.value.trim();
+            document.getElementById('usernameDorkPreview').textContent = v ? `allintext:"${v}"` : 'allintext:"username"';
+        });
+
+        document.getElementById('usernameSearch').addEventListener('click', () => {
+            if (!usernameInput.value.trim()) return showNotification('Enter a username', 'error');
+            window.open(`https://duckduckgo.com/?kae=d&q=${encodeURIComponent(document.getElementById('usernameDorkPreview').textContent)}`, '_blank');
+        });
+
+        const webDorkType = document.getElementById('webDorkType'), webDorkInput = document.getElementById('webDorkInput');
+        function updateWebDork() {
+            const val = webDorkInput.value.trim() || 'example.com';
+            document.getElementById('webDorkPreview').textContent = `${webDorkType.value}:${val}`;
+        }
+        webDorkType.addEventListener('change', updateWebDork);
+        webDorkInput.addEventListener('input', updateWebDork);
+
+        document.getElementById('webDorkSearch').addEventListener('click', () => {
+            if (!webDorkInput.value.trim()) return showNotification('Enter term', 'error');
+            window.open(`https://duckduckgo.com/?kae=d&q=${encodeURIComponent(document.getElementById('webDorkPreview').textContent)}`, '_blank');
+        });
+
+        // API TABS
+        document.querySelectorAll('.api-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.api-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                document.querySelectorAll('.api-panel').forEach(p => p.classList.add('hidden'));
+                document.getElementById(`${tab.dataset.tab}Panel`).classList.remove('hidden');
+            });
+        });
+
+        // API SEARCH HANDLERS
+        async function fetchRealOSINTAPI(type, input) {
+            let url = '';
+            // Demo implementations mapping real API endpoints that can be hit from browser (CORS allowing)
+            // Note: In a pure HTML file, strict CORS APIs may fail, so server-proxied endpoints should replace these in prod.
+            switch(type) {
+                case 'ip_info':
+                    url = `https://ipapi.co/${input}/json/`; break;
+                case 'username_github':
+                    url = `https://api.github.com/users/${input}`; break;
+                case 'email_hibp':
+                    url = `https://api.xposedornot.com/v1/check-email/${input}`; break;
+                default:
+                    // Simulated fallback
+                    await new Promise(r => setTimeout(r, 1000));
+                    return { simulated: true, query: input, metadata: 'Requires direct API Key backend.' };
+            }
+            const res = await fetch(url);
+            return await res.json();
+        }
+
+        async function bindSearch(btnId, inputId, apiTypeId, category) {
+            document.getElementById(btnId).addEventListener('click', async () => {
+                const val = document.getElementById(inputId).value.trim();
+                const type = document.getElementById(apiTypeId).value;
+                if (!val) return showNotification('Field cannot be empty', 'error');
+                
+                const rc = document.getElementById('resultsContainer');
+                rc.innerHTML = `<div class="loading"><div class="loading-spinner"></div><span>Probe Active...</span></div>`;
+                document.getElementById('resultsBlock').scrollIntoView({ behavior: 'smooth' });
+
+                try {
+                    const data = await fetchRealOSINTAPI(type, val);
+                    rc.innerHTML = `
+                        <div class="result-item">
+                            <div class="result-header">
+                                <span class="result-title">${category} Scanned</span>
+                                <span class="result-badge">${type.toUpperCase()}</span>
+                            </div>
+                            <div class="result-content"><strong>Target:</strong> ${val}<pre>${JSON.stringify(data, null, 2)}</pre></div>
+                        </div>`;
+                    showNotification('OSINT Scan completed!', 'success');
+                } catch(e) {
+                    rc.innerHTML = `<div class="result-item"><div class="result-header"><span class="result-title">Error</span><span class="result-badge danger">FAILED</span></div><div class="result-content">${e.message}</div></div>`;
+                }
+            });
+        }
+
+        bindSearch('emailSearch', 'emailInput', 'emailApiType', 'Email Intelligence');
+        bindSearch('usernameApiSearch', 'usernameApiInput', 'usernameApiType', 'User Recon');
+        bindSearch('ipSearch', 'ipInput', 'ipApiType', 'Infrastructure');
+        bindSearch('leakSearch', 'leakInput', 'leakApiType', 'Breach Data');
+        bindSearch('socialSearch', 'socialInput', 'socialApiType', 'Social Footprint');
+
+        // ==========================================
+        // THEME ENGINE (Universal App)
+        // ==========================================
+        const savedAppTheme = localStorage.getItem('doxcord_theme_app');
+        if (savedAppTheme) document.documentElement.style.setProperty('--primary', savedAppTheme);
+
+    </script>
+</body>
+</html>

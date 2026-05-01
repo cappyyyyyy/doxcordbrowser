@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OSINT Tools - Doxcord</title>
+    <link rel="stylesheet" href="osint-styles.css">
+</head>
+<body>
+    <div class="osint-container">
+        <div class="osint-header">
+            <h1>🔍 OSINT Intelligence Tools</h1>
+            <button class="close-osint" id="closeOsint">✕</button>
+        </div>
+
+        <!-- Google Dork Section -->
+        <div class="tool-section">
+            <h2>🎯 Google Dork Generator</h2>
+            <div class="dork-type-selector">
+                <button class="dork-type-btn active" data-type="username">Username Dork</button>
+                <button class="dork-type-btn" data-type="web">Web Dork</button>
+            </div>
+
+            <!-- Username Dork -->
+            <div class="dork-panel" id="usernameDork">
+                <input type="text" class="osint-input" id="usernameInput" placeholder="Enter username...">
+                <button class="osint-btn" id="usernameSearch">Search Username</button>
+                <div class="dork-preview">
+                    <strong>Generated Dork:</strong>
+                    <code id="usernameDorkPreview">allintext:"username"</code>
+                </div>
+            </div>
+
+            <!-- Web Dork -->
+            <div class="dork-panel hidden" id="webDork">
+                <select class="osint-select" id="webDorkType">
+                    <option value="site">Site Search</option>
+                    <option value="filetype">File Type</option>
+                    <option value="inurl">In URL</option>
+                    <option value="intitle">In Title</option>
+                    <option value="intext">In Text</option>
+                    <option value="cache">Cached Page</option>
+                    <option value="related">Related Sites</option>
+                </select>
+                <input type="text" class="osint-input" id="webDorkInput" placeholder="Enter search term...">
+                <button class="osint-btn" id="webDorkSearch">Generate & Search</button>
+                <div class="dork-preview">
+                    <strong>Generated Dork:</strong>
+                    <code id="webDorkPreview">site:example.com</code>
+                </div>
+            </div>
+        </div>
+
+        <!-- OSINT APIs Section -->
+        <div class="tool-section">
+            <h2>🛡️ OSINT APIs</h2>
+            
+            <div class="api-tabs">
+                <button class="api-tab active" data-tab="email">Email</button>
+                <button class="api-tab" data-tab="username">Username</button>
+                <button class="api-tab" data-tab="ip">IP/Domain</button>
+                <button class="api-tab" data-tab="leak">Data Breach</button>
+                <button class="api-tab" data-tab="social">Social Media</button>
+            </div>
+
+            <!-- Email Tab -->
+            <div class="api-panel" id="emailPanel">
+                <select class="osint-select" id="emailApiType">
+                    <option value="leak_leakcheck">LeakCheck</option>
+                    <option value="email_hibp">Have I Been Pwned</option>
+                    <option value="email_hudsonrock">Hudson Rock</option>
+                    <option value="email_pdl">EmailRep</option>
+                    <option value="disposable_email">Disposable Check</option>
+                    <option value="epieos_email">Epieos Intel</option>
+                </select>
+                <input type="text" class="osint-input" id="emailInput" placeholder="Enter email address...">
+                <button class="osint-btn" id="emailSearch">Search Email</button>
+            </div>
+
+            <!-- Username Tab -->
+            <div class="api-panel hidden" id="usernamePanel">
+                <select class="osint-select" id="usernameApiType">
+                    <option value="username_github">GitHub Profile</option>
+                    <option value="username_social">Social Searcher</option>
+                    <option value="discord_id_query">Discord ID</option>
+                </select>
+                <input type="text" class="osint-input" id="usernameApiInput" placeholder="Enter username...">
+                <button class="osint-btn" id="usernameApiSearch">Search Username</button>
+            </div>
+
+            <!-- IP/Domain Tab -->
+            <div class="api-panel hidden" id="ipPanel">
+                <select class="osint-select" id="ipApiType">
+                    <option value="ip_info">IP Info</option>
+                    <option value="ip_detailed">IP Detailed</option>
+                    <option value="vpn_check">VPN Check</option>
+                    <option value="domain_dns">DNS Lookup</option>
+                    <option value="domain_whois">WHOIS</option>
+                    <option value="domain_subdomains">Subdomains</option>
+                    <option value="port_scan">Port Scan</option>
+                </select>
+                <input type="text" class="osint-input" id="ipInput" placeholder="Enter IP or domain...">
+                <button class="osint-btn" id="ipSearch">Search IP/Domain</button>
+            </div>
+
+            <!-- Data Breach Tab -->
+            <div class="api-panel hidden" id="leakPanel">
+                <select class="osint-select" id="leakApiType">
+                    <option value="leak_all">All Leaks</option>
+                    <option value="pwned_pass">Password Check</option>
+                    <option value="leak_pastebin">Pastebin Search</option>
+                    <option value="breachvip_email">BreachVIP Email</option>
+                    <option value="breachvip_username">BreachVIP Username</option>
+                </select>
+                <input type="text" class="osint-input" id="leakInput" placeholder="Enter email or password...">
+                <button class="osint-btn" id="leakSearch">Check Breach</button>
+            </div>
+
+            <!-- Social Media Tab -->
+            <div class="api-panel hidden" id="socialPanel">
+                <select class="osint-select" id="socialApiType">
+                    <option value="oathnet_holehe">Holehe (Email to Social)</option>
+                    <option value="oathnet_ghunt">GHunt (Google)</option>
+                    <option value="oathnet_discord">Discord Info</option>
+                    <option value="oathnet_roblox">Roblox Info</option>
+                    <option value="oathnet_steam">Steam Info</option>
+                </select>
+                <input type="text" class="osint-input" id="socialInput" placeholder="Enter email or username...">
+                <button class="osint-btn" id="socialSearch">Search Social</button>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div class="tool-section">
+            <h2>📊 Results</h2>
+            <div class="results-container" id="resultsContainer">
+                <div class="results-placeholder">
+                    <span class="placeholder-icon">🔍</span>
+                    <p>No results yet. Start a search above.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="osint-script.js"></script>
+</body>
+</html>

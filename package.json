@@ -1,0 +1,55 @@
+{
+  "name": "doxcord",
+  "version": "1.0.0",
+  "description": "OSINT-focused cyberpunk browser for Linux",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --linux",
+    "build-win": "electron-builder --win"
+  },
+  "keywords": [
+    "osint",
+    "browser",
+    "cyberpunk",
+    "intelligence"
+  ],
+  "author": "Doxcord Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@cliqz/adblocker-electron": "^1.34.0",
+    "@cliqz/adblocker-electron-preload": "^1.34.0",
+    "cross-fetch": "^4.1.0",
+    "electron": "^28.0.0",
+    "electron-builder": "^24.9.1",
+    "fetch-node": "^0.0.1",
+    "puppeteer": "^24.42.0"
+  },
+  "build": {
+    "appId": "com.doxcord.app",
+    "productName": "Doxcord",
+    "directories": {
+      "output": "dist"
+    },
+    "linux": {
+      "icon": "logo.png",
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "category": "Network"
+    },
+    "win": {
+      "icon": "logo.png",
+      "target": [
+        "nsis",
+        "portable"
+      ]
+    }
+  },
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "dotenv": "^17.4.2",
+    "pg": "^8.20.0"
+  }
+}
